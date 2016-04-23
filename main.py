@@ -2,29 +2,30 @@ import os
 import sys
 import cv2
 
-from detection.detector import Detector, Tracker
+from detection.detector import Detector, Tracker, Player
 
 CUR_PATH = os.getcwd()
 RES_PATH = os.getcwd() + '/res/'
 
 DEFAULT_IMAGE = RES_PATH + 'face1.jpg'
+DEFAULT_VIDEO = RES_PATH + 'AeroDreamPhone.mp4'
 CASCADED_DETECTOR_XML = RES_PATH + 'haarcascade_frontalface.xml'
 
 def main(args):
     if len(args) > 1:
         source = args[1]
     else:
-        source = DEFAULT_IMAGE
+        # Format = Caprturing + camera ID
+        source = "Capturing0"
 
-    img = cv2.imread(source, cv2.IMREAD_COLOR)
-
+    player = Player(source)
     detector = Detector(CASCADED_DETECTOR_XML)
-    faces = detector.findFace(img)
 
-    cv2.namedWindow(source, cv2.WINDOW_NORMAL)
-    cv2.imshow(source, img)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    player.setProcessing(detector.findFace)
+
+    if player is not None:
+        player.run()
+
     return
 
 if __name__ == "__main__":
